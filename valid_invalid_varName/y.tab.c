@@ -71,9 +71,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <string.h>
+#include "y.tab.h"
 
-#line 77 "y.tab.c"
+#line 78 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -130,7 +131,16 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 8 "valName.y"
+
+    char *s;
+
+#line 141 "y.tab.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -478,18 +488,18 @@ union yyalloc
 #endif /* !YYCOPY_NEEDED */
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  3
+#define YYFINAL  4
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   1
+#define YYLAST   2
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  4
 /* YYNNTS -- Number of nonterminals.  */
 #define YYNNTS  2
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  2
+#define YYNRULES  3
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  4
+#define YYNSTATES  5
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   258
@@ -538,7 +548,7 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    11,    11
+       0,    16,    16,    17
 };
 #endif
 
@@ -565,7 +575,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-4)
+#define YYPACT_NINF (-2)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -579,7 +589,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -3,    -4,     1,    -4
+      -1,    -2,    -2,     1,    -2
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -587,19 +597,19 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     2,     0,     1
+       0,     3,     2,     0,     1
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -4,    -4
+      -2,    -2
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     2
+       0,     3
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -607,31 +617,31 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-       1,     3
+       1,     4,     2
 };
 
 static const yytype_int8 yycheck[] =
 {
-       3,     0
+       1,     0,     3
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,     3,     5,     0
+       0,     1,     3,     5,     0
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,     4,     5
+       0,     4,     5,     5
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1
+       0,     2,     1,     1
 };
 
 
@@ -1095,13 +1105,19 @@ yyreduce:
   switch (yyn)
     {
   case 2: /* variable: VARIABLE  */
-#line 11 "valName.y"
-                   { printf("Valid variable: %s\n", yyvsp[0]); }
-#line 1101 "y.tab.c"
+#line 16 "valName.y"
+                   { printf("Valid variable: %s\n", (yyvsp[0].s)); free((yyvsp[0].s)); }
+#line 1111 "y.tab.c"
+    break;
+
+  case 3: /* variable: error  */
+#line 17 "valName.y"
+                     { yyerror("Invalid variable"); }
+#line 1117 "y.tab.c"
     break;
 
 
-#line 1105 "y.tab.c"
+#line 1121 "y.tab.c"
 
       default: break;
     }
@@ -1294,7 +1310,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 14 "valName.y"
+#line 20 "valName.y"
 
 
 int main() {
@@ -1306,22 +1322,4 @@ int main() {
 int yyerror(char *s) {
     printf("Error: %s\n", s);
     return 0;
-}
-
-int yylex() {
-    int c;
-    c = getchar();
-    if (isalpha(c)) {
-        char buffer[100];
-        buffer[0] = c;
-        int i = 1;
-        while ((c = getchar()) != EOF && (isalnum(c) || c == '_')) {
-            buffer[i++] = c;
-        }
-        ungetc(c, stdin);
-        buffer[i] = '\0';
-        yylval.s = strdup(buffer);
-        return VARIABLE;
-    }
-    return c;
 }

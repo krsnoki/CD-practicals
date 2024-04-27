@@ -1,14 +1,20 @@
 %{
 #include <stdio.h>
 #include <stdlib.h>
-#include <ctype.h>
+#include <string.h>
+#include "y.tab.h"
 %}
 
-%token VARIABLE
+%union {
+    char *s;
+}
+
+%token <s> VARIABLE
 
 %%
 
-variable: VARIABLE { printf("Valid variable: %s\n", $1); }
+variable: VARIABLE { printf("Valid variable: %s\n", $1); free($1); }
+        | error      { yyerror("Invalid variable"); }
         ;
 
 %%
@@ -22,22 +28,4 @@ int main() {
 int yyerror(char *s) {
     printf("Error: %s\n", s);
     return 0;
-}
-
-int yylex() {
-    int c;
-    c = getchar();
-    if (isalpha(c)) {
-        char buffer[100];
-        buffer[0] = c;
-        int i = 1;
-        while ((c = getchar()) != EOF && (isalnum(c) || c == '_')) {
-            buffer[i++] = c;
-        }
-        ungetc(c, stdin);
-        buffer[i] = '\0';
-        yylval.s = strdup(buffer);
-        return VARIABLE;
-    }
-    return c;
 }
