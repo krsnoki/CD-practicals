@@ -14,7 +14,7 @@ stmt: IF stmt { nesting_level++; printf("Nested IF statement (Level: %d)\n", nes
 
 %%
 
-int main() {
+int main() { 
     printf("Enter your nested if control statements:\n");
     yyparse();
     return 0;
