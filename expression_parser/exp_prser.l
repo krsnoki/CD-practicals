@@ -1,27 +1,15 @@
 %{
-#include <stdio.h>
+#include "y.tab.h"
 %}
 
-%token NUMBER
-%token PLUS MINUS TIMES DIVIDE
+%%
+
+[0-9]+          { yylval = atoi(yytext); return NUMBER; }
+[-+*/()\\n]     { return yytext[0]; }
+.               { yyerror("Invalid character"); }
 
 %%
 
-expression: NUMBER
-          | expression PLUS expression
-          | expression MINUS expression
-          | expression TIMES expression
-          | expression DIVIDE expression
-          ;
-
-%%
-
-int main() {
-    yyparse();
-    return 0;
-}
-
-int yyerror(char *s) {
-    printf("Error: %s\n", s);
-    return 0;
+int yywrap() {
+    return 1;
 }
